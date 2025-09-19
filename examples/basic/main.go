@@ -8,21 +8,15 @@ import (
 )
 
 func main() {
-	// Load configuration
-	config, err := syncer.LoadConfig("config.yaml")
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	// Setup logger
 	logger := logrus.New()
 
-	// Connect to SSH server
+	// Connect to SSH server directly
 	sshClient, sftpClient, err := syncer.ConnectSSH(
-		config.SSH.Host,
-		config.SSH.Port,
-		config.SSH.User,
-		config.SSH.Password,
+		"your-server-host.com", // host
+		22,                     // port
+		"your-username",        // user
+		"your-password",        // password
 	)
 	if err != nil {
 		log.Fatal(err)
@@ -30,8 +24,16 @@ func main() {
 	defer sshClient.Close()
 	defer sftpClient.Close()
 
+	// Create sync config directly
+	syncConfig := syncer.SyncConfig{
+		LocalPath:  "/path/to/your/local/directory",
+		RemotePath: "/path/to/your/remote/directory",
+		Mode:       "full", // or "incremental"
+		Workers:    10,
+	}
+
 	// Create syncer
-	fileSyncer := syncer.New(sftpClient, config, logger)
+	fileSyncer := syncer.New(sftpClient, syncConfig, logger)
 
 	// Perform synchronization
 	if err := fileSyncer.Sync(); err != nil {

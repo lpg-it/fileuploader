@@ -4,16 +4,22 @@ This is a basic example showing how to use the fileuploader library in your own 
 
 ## Usage
 
-1. Copy the config.yaml file:
-   ```bash
-   cp ../../config.yaml .
-   ```
+The example demonstrates the direct parameter approach:
 
-2. Edit the config.yaml file with your specific settings
+1. Edit the main.go file with your specific settings:
+   - SSH connection details (host, port, user, password)
+   - Local and remote directory paths
+   - Sync mode (full or incremental)
+   - Number of worker threads
 
-3. Run the example:
+2. Run the example:
    ```bash
    go run main.go
    ```
 
-This example demonstrates the basic usage of the fileuploader library as an imported package.
+## Key Points
+
+- The library does NOT require or support configuration files
+- All configuration is provided directly as parameters
+- You can modify the source code to use environment variables, configuration files, or hardcoded values as needed
+- The library is completely agnostic to how you obtain the configuration parameters

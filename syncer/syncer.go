@@ -13,25 +13,20 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-// Config represents the configuration structure
-type Config struct {
-	SSH struct {
-		Host     string `yaml:"host"`
-		Port     int    `yaml:"port"`
-		User     string `yaml:"user"`
-		Password string `yaml:"password"`
-	} `yaml:"ssh"`
-	Paths struct {
-		Local  string `yaml:"local"`
-		Remote string `yaml:"remote"`
-	} `yaml:"paths"`
-	Sync struct {
-		Mode    string `yaml:"mode"`
-		Workers int    `yaml:"workers"`
-	} `yaml:"sync"`
-	Log struct {
-		File string `yaml:"file"`
-	} `yaml:"log"`
+// SSHConfig holds SSH connection parameters
+type SSHConfig struct {
+	Host     string
+	Port     int
+	User     string
+	Password string
+}
+
+// SyncConfig holds synchronization parameters
+type SyncConfig struct {
+	LocalPath  string
+	RemotePath string
+	Mode       string
+	Workers    int
 }
 
 // FileInfo represents file information for synchronization
@@ -57,14 +52,14 @@ type Syncer struct {
 	logger     *logrus.Logger
 }
 
-// New creates a new Syncer instance
-func New(client *sftp.Client, config Config, logger *logrus.Logger) *Syncer {
+// New creates a new Syncer instance with direct configuration
+func New(client *sftp.Client, syncConfig SyncConfig, logger *logrus.Logger) *Syncer {
 	return &Syncer{
 		client:     client,
-		localPath:  config.Paths.Local,
-		remotePath: config.Paths.Remote,
-		mode:       config.Sync.Mode,
-		workers:    config.Sync.Workers,
+		localPath:  syncConfig.LocalPath,
+		remotePath: syncConfig.RemotePath,
+		mode:       syncConfig.Mode,
+		workers:    syncConfig.Workers,
 		logger:     logger,
 	}
 }

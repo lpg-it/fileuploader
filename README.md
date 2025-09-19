@@ -11,7 +11,7 @@ A flexible Go-based library for synchronizing local files to a remote server via
 - **Progress Tracking**: Visual progress bar showing upload status
 - **Logging**: Detailed logs for troubleshooting
 - **Safety Measures**: Automatic backup and rollback capabilities
-- **Configuration File**: All settings managed through a single YAML configuration file
+- **Pure Parameter-Driven**: No configuration file requirements - you provide parameters directly
 
 ## Installation
 
@@ -22,6 +22,8 @@ go get github.com/lpg-it/fileuploader
 ```
 
 ## Usage
+
+The library is purely parameter-driven. You provide all configuration directly as parameters:
 
 ```go
 package main
@@ -34,31 +36,33 @@ import (
 )
 
 func main() {
-    // Load configuration
-    config, err := syncer.LoadConfig("config.yaml")
-    if err != nil {
-        log.Fatal(err)
-    }
-    
     // Setup logger
     logger := logrus.New()
-    
-    // Connect to SSH server
+
+    // Connect to SSH server directly
     sshClient, sftpClient, err := syncer.ConnectSSH(
-        config.SSH.Host,
-        config.SSH.Port,
-        config.SSH.User,
-        config.SSH.Password,
+        "your-server-host.com", // host
+        22,                     // port
+        "your-username",        // user
+        "your-password",        // password
     )
     if err != nil {
         log.Fatal(err)
     }
     defer sshClient.Close()
     defer sftpClient.Close()
-    
+
+    // Create sync config directly
+    syncConfig := syncer.SyncConfig{
+        LocalPath:  "/path/to/your/local/directory",
+        RemotePath: "/path/to/your/remote/directory",
+        Mode:       "full", // or "incremental"
+        Workers:    10,
+    }
+
     // Create syncer
-    fileSyncer := syncer.New(sftpClient, config, logger)
-    
+    fileSyncer := syncer.New(sftpClient, syncConfig, logger)
+
     // Perform synchronization
     if err := fileSyncer.Sync(); err != nil {
         log.Fatal(err)
@@ -70,7 +74,6 @@ func main() {
 
 - `syncer`: Main package containing synchronization logic
   - `syncer.go`: Core synchronization functionality
-  - `config.go`: Configuration loading utilities
   - `ssh.go`: SSH connection utilities
 
 ## Sync Modes
@@ -97,7 +100,7 @@ This mode only uploads files that exist locally but not on the remote server, or
 
 ## Logging
 
-When using this library, you can configure logging through the logger you pass to the [New()](file:///Users/lipeiguan/projects/fileuploader/syncer/syncer.go#L74-L79) function. The library will use your logger for all its operations.
+When using this library, you can configure logging through the logger you pass to the [New()](file:///Users/lipeiguan/projects/fileuploader/syncer/syncer.go#L56-L63) function. The library will use your logger for all its operations.
 
 ## Security Notes
 
