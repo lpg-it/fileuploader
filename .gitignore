@@ -1,0 +1,20 @@
+# Binaries
+/fileuploader
+/simple-example
+
+# Log files
+*.log
+
+# Configuration files (these contain sensitive information)
+config.yaml
+
+# IDE files
+.vscode/
+.idea/
+
+# macOS files
+.DS_Store
+
+# Temporary files
+*.tmp
+.tmp_*
